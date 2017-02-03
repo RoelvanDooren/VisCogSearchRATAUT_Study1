@@ -51,8 +51,12 @@ class Input:
         self.y = surface.get_height() / 2
         self.current_string = []
         self.previous_string = ""
+        self.past_correct_rt = []
+        self.past_incorrect_rt = []
         self.past_correct_words = []
         self.past_incorrect_words = []
+        self.begin_word = 0
+        self.end_word = 0
         self.n_correct_words = 0
         self.n_incorrect_words = 0
         self.prev_n_correct = 0
@@ -82,12 +86,14 @@ class Input:
         self.textpos = self.text.get_rect(topleft=(10, 10))
         self.surface.blit(self.text, self.textpos)
         
+        """Draw user input"""
         while True:
             event = pygame.event.poll()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_BACKSPACE:
                     self.current_string = self.current_string[:-1]
                 elif event.key == pygame.K_RETURN:
+                    self.end_word = timer()
                     self.checker(string.join(self.current_string, ""),
                                  correct)
                     self.current_string = []
@@ -110,6 +116,7 @@ class Input:
     def checker(self, word, cor_words):
         correct = cor_words
         word = word
+        
         # check whether this word has been entered earlier
         if word in self.past_correct_words:
             self.surface.blit(self.font_feedback.render("Dit woord heb je "
@@ -126,6 +133,7 @@ class Input:
             self.surface.blit(self.font_feedback.render("Correct!",
                               1, correct_color),
                               (self.x - 55, self.y - 70))
+            self.past_correct_rt.append(self.end_word - self.begin_word)
             self.past_correct_words.append(word)
             self.n_correct_words += 1
             self.total_correct_words += 1
@@ -142,6 +150,7 @@ class Input:
             self.surface.blit(self.font_feedback.render("Incorrect",
                               1, incorrect_color),
                               (self.x - 60, self.y - 70))
+            self.past_incorrect_rt.append(self.end_word - self.begin_word)
             self.past_incorrect_words.append(word)
             self.n_incorrect_words += 1
             self.total_incorrect_words += 1
@@ -151,6 +160,7 @@ class Input:
                              ((self.x - 200), self.y - 80,
                               400, 60), 0)
 
+        self.begin_word = timer()
 
 class Wait:
     def __init__(self, surface):
@@ -172,7 +182,7 @@ class Wait:
 
     def waiter(self, time):
         self.surface.fill(background_color)
-        text = self.font.render("Wacht op de volgende letterset", 1,
+        text = self.font.render("", 1,
                                 color_font)
         self.surface.blit(text, (self.x - 140, self.y))
         pygame.display.flip()
@@ -233,8 +243,8 @@ class Main:
         filename = os.path.join("output", "ERC_WP3_Year1_Study1_") + str(self.subjectID) + "_" + str(self.expStartTime) + "_scrabble_pretest"+".txt"
         f = open(filename, 'w')
         output = 'expStartTime;subjectID;condition;nth_set;letterset;time_start;time_end;' \
-                 'time_in_set;correct_n;correct_words;incorrect_n;' \
-                 'incorrect_words\n'
+                 'time_in_set;correct_n;correct_words;rt_correct_words;incorrect_n;' \
+                 'incorrect_words;rt_incorrect_words\n'
         f.write(output)
         f.close()
 
@@ -260,7 +270,8 @@ class Main:
 
         self.wait.intro(image_intro01)
         self.wait.intro(image_intro02)
-
+        self.user_input.begin_word = timer()
+        
         for number in self.indicator:
             """Loop through letter sets and check input until next set
             button is clicked. Repeat until last set has been shown"""
@@ -273,13 +284,14 @@ class Main:
             self.incorrect_input.append(self.user_input.past_incorrect_words)
             self.time = (timer() - self.begin)
             self.write_data(number)
-
-            self.user_input.n_correct_words = 0
-            self.user_input.n_incorrect_words = 0
+            
+            self.user_input.past_correct_rt = []
+            self.user_input.past_incorrect_rt = []
             self.user_input.past_correct_words = []
             self.user_input.past_incorrect_words = []
 
             if self.set_counter + 1 == len(self.indicator):  # Check if this was the final set
+                self.wait.waiter(time=self.wait_time)
                 image_outro01 = pygame.image.load(os.path.join("images", "intro_scrabble_pretest03.png")).convert()
                 self.wait.intro(image_outro01)
             else:
@@ -299,7 +311,7 @@ class Main:
 
     def write_data(self, number, filename=None):
         if filename is None:
-            filename = os.path.join("output", "ERC_WP3_Year1_Study1_")+  str(self.subjectID) + "_" + str(self.expStartTime) + "_scrabble_pretest"+".txt"
+            filename = os.path.join("output", "ERC_WP3_Year1_Study1_") + str(self.subjectID) + "_" + str(self.expStartTime) + "_scrabble_pretest"+".txt"
         f = open(filename, 'a')
         output = str(self.expStartTime) + ";" + \
 				 str(self.subjectID) + ";" + \
@@ -311,8 +323,10 @@ class Main:
                  str(self.time) + ";" + \
                  str(self.user_input.prev_n_correct) + ";" + \
                  str(self.correct_input[self.set_counter]) + ";" + \
+                 str(self.user_input.past_correct_rt) + ";" + \
                  str(self.user_input.prev_n_incorrect) + ";" + \
-                 str(self.incorrect_input[self.set_counter]) + "\n"
+                 str(self.incorrect_input[self.set_counter]) + ";" + \
+                 str(self.user_input.past_incorrect_rt) + "\n"
         f.write(output)
         f.close()
 

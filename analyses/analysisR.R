@@ -46,17 +46,17 @@ foraging_df[foraging_df$condition=="c",]$angle_after_food <- remove_outliers(for
 foraging_df[foraging_df$condition=="d",]$angle_after_food <- remove_outliers(foraging_df[foraging_df$condition=="d",]$angle_after_food)
 
 # Df containing mean foraging data
-cdata_foraging <- ddply(foraging_df, c("subjectID", "condition"), summarise, mean = mean(turn_angle),
-                        sd   = sd(turn_angle), mean_angle_after_food = mean(angle_after_food),
-                        median_angle_after_food = median(angle_after_food), mean_angle_per_food = mean(angle_per_food),
-                        median_angle_per_food = median(angle_per_food))
+cdata_foraging <- ddply(foraging_df, c("subjectID", "condition"), summarise, mean = mean(turn_angle, na.rm = T),
+                        sd   = sd(turn_angle, na.rm = T), mean_angle_after_food = mean(angle_after_food, na.rm = T),
+                        median_angle_after_food = median(angle_after_food, na.rm = T), mean_angle_per_food = mean(angle_per_food, na.rm = T),
+                        median_angle_per_food = median(angle_per_food, na.rm = T))
 
 # Scrabble pre-test data
 pre_scrab_df <- data.frame()
 files <- list.files("../output", pattern="scrabble_pretest.txt", recursive=TRUE, full.names=TRUE)
 for (currentFile in files) {
   pre_scrab_df <- rbind(pre_scrab_df,read.csv2(currentFile, fileEncoding="UTF-8-BOM", dec='.', sep=';', header=TRUE,
-                                               colClasses=c("factor", "integer", "factor","integer","factor","numeric","numeric","numeric","integer","factor","integer","factor")))
+                                               colClasses=c("factor", "integer", "factor","integer","factor","numeric","numeric","numeric","integer","factor", "factor" ,"integer","factor", "factor")))
 }
 
 # Remove outliers scrabble pre-test data
@@ -74,7 +74,7 @@ post_scrab_df <- data.frame()
 files <- list.files("../output", pattern="scrabble_posttest.txt", recursive=TRUE, full.names=TRUE)
 for (currentFile in files) {
   post_scrab_df <- rbind(post_scrab_df,read.csv2(currentFile, fileEncoding="UTF-8-BOM", dec='.', sep=';', header=TRUE, 
-                                                 colClasses=c("factor", "integer", "factor","integer","factor","numeric","numeric","numeric","integer","factor","integer","factor")))
+                                                 colClasses=c("factor", "integer", "factor","integer","factor","numeric","numeric","numeric","integer","factor", "factor","integer","factor", "factor")))
 }
 
 # Remove outliers scrabble post-test data

@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 
-with open('visual_foraging_practice.py', 'rb+') as f:
+# Enter script to convert dos2unix.
+with open(SCRIPT HERE, 'rb+') as f:
     content = f.read()
     f.seek(0)
     f.write(content.replace(b'\r', b''))

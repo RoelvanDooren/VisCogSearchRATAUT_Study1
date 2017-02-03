@@ -4,7 +4,7 @@ def init_datafile_path(expStartTime, subjectID, trialNum, eachfile, filename=Non
 	if filename is None:
 		filename = os.path.join("ERC_WP3_Year1_Study1_") + str(subjectID) + "_" + str(expStartTime) + "_visual_foraging_path_array_" + ("practice_" if "practice" in eachfile else "") + "trial" + ("_" if not "practice" in eachfile else "") + str(trialNum) + ".txt"
 	f = open(filename, 'w')
-	output = ('expStartTime, subjectID, condition, trial_num, timespent, xcoord, ycoord, collision_encountered, total_collisions\n' if "practice_" in eachfile else 'expStartTime, subjectID, condition, trial_num, timespent, xcoord, ycoord, resource_encountered, resource_encountered_here_before, food_eaten, timesteps_left\n')
+	output = ('expStartTime, subjectID, condition, trial_num, timespent, xcoord, ycoord, collision_encountered, total_collisions\n' if "practice_" in eachfile else 'expStartTime, subjectID, condition, trial_num, timespent, xcoord, ycoord, current_angle, resource_encountered, resource_encountered_here_before, food_eaten, timesteps_left\n')
 	f.write(output)
 	f.close()
 

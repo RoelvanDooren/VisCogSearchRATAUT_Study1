@@ -233,8 +233,8 @@ class App:
         self.clock = pygame.time.Clock()
         self._display_surf = pygame.display.set_mode(self.size,
                                                      pygame.HWSURFACE |
-                                                     pygame.DOUBLEBUF |
-                                                     pygame.FULLSCREEN)
+                                                     pygame.DOUBLEBUF)# |
+                                                     #pygame.FULLSCREEN)
         self.wait = Wait(self._display_surf)
 
     def on_event(self, event):
@@ -313,7 +313,7 @@ class App:
             self.on_loop()
             self.on_render()
             self.path_array.append([self.expStartTime, self.subjectID, self.condition, self.trialNum+1, timer() - self.trialStartTime - 3, 
-								  self.agent.position[0], self.agent.position[1],
+								  self.agent.position[0], self.agent.position[1], self.agent.direction,
 								  self.agent.food_encounter, self.food_encounter_previous_xycoord, self.agent.total_food, self.update_counter])
 				
             if timer()-self.trialStartTime >= self.trial_time:
@@ -338,6 +338,7 @@ class App:
         self.wait.intro(image_intro01)
 
         for trialNum in range(5):
+			self.update_counter = 2400
 			self.run_trial(trialNum)
 
 

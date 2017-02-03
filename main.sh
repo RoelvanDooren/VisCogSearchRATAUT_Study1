@@ -2,7 +2,7 @@
 
 echo """PhD Metacontrol: Leiden University
 Year 1, study 1: VisCogSearchRATAUT_Study1.
-Last adjustment on: 2017-01-31
+Last adjustment on: 2017-02-03
 r.van.dooren@fsw.leidenuniv.nl
 """
 
