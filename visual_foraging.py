@@ -102,34 +102,78 @@ class Wait:
                     return
 
 class Environment:
-    def __init__(self):
+    def __init__(self, expStartTime, subject, condition, trialnum):
         self.map = np.zeros((200, 200))
+        self.expStartTime = expStartTime
+        self.subjectID = subject
+        self.condition = condition
+        self.trialNum = trialnum
 
-    def gen_diffuse(self, num_patches=624):
+    def write_mapSurface(self, mapSurface, filename=None):
+        if filename is None:
+            filename = os.path.join("output", "ERC_WP3_Year1_Study1_") + str(self.subjectID) + "_" + str(self.expStartTime) + "_visual_foraging_mapSurface_trial_" + str(self.trialNum+1) + ".txt"
+        f = open(filename, 'a')
+        f.write("%s" % mapSurface)
+        f.close()
+
+    def init_datafile_mapSurface(self, filename=None):
+        if filename is None:
+            filename = os.path.join("output", "ERC_WP3_Year1_Study1_") + str(self.subjectID) + "_" + str(self.expStartTime) + "_visual_foraging_mapSurface_trial_" + str(self.trialNum+1) + ".txt"
+          
+    def drawnewcoords(self, coordall):
+		overlaps = True
+		while overlaps:
+			xpos = random.randint(0+2, 200-2)
+			ypos = random.randint(0+2, 200-2)
+			coordlist = ((xpos-1, ypos), (xpos, ypos-1), (xpos, ypos), (xpos+1, ypos), (xpos, ypos+1))
+			mapcoordlist = [x for eachlist in coordall for x in eachlist]
+			if [x for x in coordlist if x in mapcoordlist] == []:
+				overlaps = False
+		return coordlist
+
+    def gen_diffuse(self, num_patches=608): # 608 rather than 624 patches of 5 px each.
         mapSurface = pygame.Surface((200, 200), flags=0)
-        mapSurface.fill((0, 0, 0))
-        for i in range(num_patches):
-            xpos = random.randint(0, 200)
-            ypos = random.randint(0, 200)
-            pygame.draw.polygon(mapSurface, (0, 0, 255),
-                                ((xpos-1, ypos), (xpos, ypos-1),
-                                 (xpos+1, ypos), (xpos, ypos+1)))
+        self.init_datafile_mapSurface()
+        overlaps = True        
+        while overlaps:
+			mapSurface.fill((0, 0, 0))
+			coordall = []
+			for i in range(num_patches):
+				xpos = random.randint(0+2, 200-2)
+				ypos = random.randint(0+2, 200-2)       
+				coordlist = ((xpos-1, ypos), (xpos, ypos-1), (xpos, ypos), (xpos+1, ypos), (xpos, ypos+1))
+				mapcoordlist = [x for eachlist in coordall for x in eachlist]
+				while any([x for x in coordlist if x in mapcoordlist]):
+					coordlist = self.drawnewcoords(coordall)
+				coordall.append(coordlist)
+				pygame.draw.polygon(mapSurface, (0, 0, 255), coordlist)
+			
+			pxarray = pygame.PixelArray(mapSurface)
+			if np.count_nonzero(np.array(pxarray) == 0) == 36960:  # If patches don't overlap there are 36960 black pixels / 3040 green pixels
+				overlaps = False
+        self.write_mapSurface(coordall)
         return mapSurface
 
     def gen_patchy(self, num_patches=4):
         mapSurface = pygame.Surface((200, 200), flags=0)
+        self.init_datafile_mapSurface()
         overlaps = True
         while overlaps is True:
             mapSurface.fill((0, 0, 0))
+            coordall = []
+            
             for i in range(num_patches):
-                xpos = random.randint(0+19, 200-19)
-                ypos = random.randint(0+19, 200-19)
-                pygame.draw.polygon(mapSurface, (0, 0, 255),
-                                    ((xpos-19, ypos), (xpos, ypos-19),
-                                     (xpos+19, ypos), (xpos, ypos+19)))
+                xpos = random.randint(0+20, 200-20)
+                ypos = random.randint(0+20, 200-20)
+                coordlist = ((xpos-19, ypos), (xpos, ypos-19), (xpos+19, ypos), (xpos, ypos+19))
+
+                coordall.append(coordlist)
+                pygame.draw.polygon(mapSurface, (0, 0, 255), coordlist)
+                
             pxarray = pygame.PixelArray(mapSurface)
-            if np.count_nonzero(np.array(pxarray) == 0) == 36956:  # If patches don't overlap there are 36956 black pixels
-                overlaps = False
+            if np.count_nonzero(np.array(pxarray) == 0) ==36956:  # If patches don't overlap there are 36956 black pixels / 3044 green pixels
+				overlaps = False
+        self.write_mapSurface(coordall)
         return mapSurface
 
 class App:
@@ -201,7 +245,7 @@ class App:
     def init_datafile_path(self, filename=None):
         if filename is None:
             filename = os.path.join("output", "ERC_WP3_Year1_Study1_") + str(self.subjectID) + "_" + str(self.expStartTime) + "_visual_foraging_path_trial_" + str(self.trialNum+1) + ".txt"
-        
+            
     def write_data(self, filename=None):
         if filename is None:
             filename = os.path.join("output", "ERC_WP3_Year1_Study1_") + str(self.subjectID) + "_" + str(self.expStartTime) + "_visual_foraging"+".txt"
@@ -233,8 +277,8 @@ class App:
         self.clock = pygame.time.Clock()
         self._display_surf = pygame.display.set_mode(self.size,
                                                      pygame.HWSURFACE |
-                                                     pygame.DOUBLEBUF)# |
-                                                     #pygame.FULLSCREEN)
+                                                     pygame.DOUBLEBUF |
+                                                     pygame.FULLSCREEN)
         self.wait = Wait(self._display_surf)
 
     def on_event(self, event):
@@ -288,6 +332,7 @@ class App:
 		black = 0, 0, 0
 		self._display_surf.fill(black)
 		self._display_surf.blit(pygame.transform.scale(self.seenSurface,(600, 600)), (0, 0))
+		#self._display_surf.blit(pygame.transform.scale(self.mapSurface,(600, 600)), (0, 0)) # Uncomment to display mapSurface
 		self.draw_info_overlay()
 		pygame.display.flip()
 
@@ -297,7 +342,7 @@ class App:
     def run_trial(self, trialNum):
         self._running = True
         self.trialNum = trialNum
-        self.env = Environment()
+        self.env = Environment(self.expStartTime, self.subjectID, self.condition, self.trialNum)
         if self.condition == "d":
             self.mapSurface = self.env.gen_diffuse()
         elif self.condition == "c":
@@ -325,8 +370,9 @@ class App:
         textpos = textScore.get_rect(center=(self._display_surf.get_width() / 2,
                                             self._display_surf.get_height() / 2.5))
         self.wait.totalScore(textScore, textpos, trialNum)
+
         self.write_data()
-        self.write_data_path(self.path_array)
+        self.write_data_path(self.path_array)		
         self.path_array = []
 		
 

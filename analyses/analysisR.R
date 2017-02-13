@@ -26,7 +26,26 @@ source("./foraging_path/checkPath.R", chdir = T)
 #remove(list = ls())
 
 # Figure out how to call bash script (bash_foraging_path.sh)
+dat <- read.csv2("ERC_WP3_Year1_Study1_0005_20170201104642_visual_foraging_mapSurfaceNEW_trial_1.txt", sep = "", header = F)
+#dat = dat[!dat$V1 == "PixelArray([" & !dat$V1 == ")",] 
+colnames(dat) <- paste("col", 1:200, sep = "")
+#dat$col1 <- gsub(',', "", dat$col1)
+#dat <- mutate(dat, col1=as.character(col1))
+#dat <- mutate(dat, col1=sapply(strsplit(dat$col1, split='[', fixed = T), function(x) (x[2])))
 
+# Refactor data
+dat <- as.data.frame(
+  lapply(dat, 
+         function(x) if(is.numeric(x)) factor(x) else x))
+
+
+
+dat2 <- apply(as.matrix(dat), c(1,2), as.numeric)
+NA %in% dat2
+
+scatter
+
+heatmap(dat2)
 
 # Load and clean datafiles ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Foraging data

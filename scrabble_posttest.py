@@ -28,7 +28,7 @@ screen_w = 640
 screen_h = 500
 fps = 60
 screen = pygame.display.set_mode((screen_w, screen_h), pygame.HWSURFACE |
-                                 pygame.DOUBLEBUF | pygame.FULLSCREEN)
+                                 pygame.DOUBLEBUF)# | pygame.FULLSCREEN)
 
 
 class Stimulus:
@@ -143,8 +143,8 @@ class Input:
                               (self.x - 55, self.y - 70))
             self.past_correct_rt.append(self.end_word - self.begin_word)
             self.past_correct_words.append(word)
-            self.n_correct_words += 1
-            self.total_correct_words += 1
+            self.n_correct_words = self.n_correct_words + 1
+            self.total_correct_words = self.total_correct_words + 1
             pygame.display.flip()
             pygame.time.delay(800)
             
@@ -160,8 +160,8 @@ class Input:
                               (self.x - 60, self.y - 70))
             self.past_incorrect_rt.append(self.end_word - self.begin_word)
             self.past_incorrect_words.append(word)
-            self.n_incorrect_words += 1
-            self.total_incorrect_words += 1
+            self.n_incorrect_words = self.n_incorrect_words + 1
+            self.total_incorrect_words = self.total_incorrect_words + 1
             pygame.display.flip()
             pygame.time.delay(800)
             pygame.draw.rect(self.surface, (255, 255, 255),
