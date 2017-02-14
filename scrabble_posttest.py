@@ -28,7 +28,7 @@ screen_w = 640
 screen_h = 500
 fps = 60
 screen = pygame.display.set_mode((screen_w, screen_h), pygame.HWSURFACE |
-                                 pygame.DOUBLEBUF)# | pygame.FULLSCREEN)
+                                 pygame.DOUBLEBUF | pygame.FULLSCREEN)
 
 
 class Stimulus:
