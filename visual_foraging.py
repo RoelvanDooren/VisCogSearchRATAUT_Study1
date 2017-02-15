@@ -46,6 +46,7 @@ class Agent:
         self.food_encounter = 'false'
         self.last_angle = self.direction
         self.last_angle_timestamp = timer()
+        self.timestamp_300ms_interval = 'NA'
         self.total_avg_turned = 0
 
     def move(self):
@@ -304,10 +305,13 @@ class App:
         if timer() - self.trialStartTime >= 3:
 			self.update_counter = int((self.total_counter/(self.trial_time-3.0)) * (self.trial_time - (timer()- self.trialStartTime)))
 			
-        if timer() - self.agent.last_angle_timestamp > 0.3:
-            self.agent.total_avg_turned += abs((((self.agent.direction - self.agent.last_angle) + 180) % 360) - 180)
-            self.agent.last_angle = self.agent.direction
-            self.agent.last_angle_timestamp = timer()
+			if timer() - self.agent.last_angle_timestamp > 0.3:
+				self.agent.total_avg_turned += abs((((self.agent.direction - self.agent.last_angle) + 180) % 360) - 180)
+				self.agent.last_angle = self.agent.direction
+				self.agent.last_angle_timestamp = timer()
+				self.agent.timestamp_300ms_interval = 'START'
+			else: 
+				self.agent.timestamp_300ms_interval = 'INTERVAL'
         position = (int(round(self.agent.position[0])),
                     int(round(self.agent.position[1])))
         mappxarray = pygame.PixelArray(self.mapSurface)
@@ -358,7 +362,7 @@ class App:
             self.on_loop()
             self.on_render()
             self.path_array.append([self.expStartTime, self.subjectID, self.condition, self.trialNum+1, timer() - self.trialStartTime - 3, 
-								  self.agent.position[0], self.agent.position[1], self.agent.direction,
+								  self.agent.position[0], self.agent.position[1], self.agent.direction, self.agent.last_angle, self.agent.timestamp_300ms_interval, self.agent.total_avg_turned,
 								  self.agent.food_encounter, self.food_encounter_previous_xycoord, self.agent.total_food, self.update_counter])
 				
             if timer()-self.trialStartTime >= self.trial_time:
