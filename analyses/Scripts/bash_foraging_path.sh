@@ -11,14 +11,15 @@ read step_size
    i=0
    # This for loop loops through all of the files that match the expression foraging_path_*. I.e. all of the images created by checkPath.R
    #for f in foraging_path_trial*
-   for f in ERC_WP3_Year1_Study1_*
+   for f in ./Temporary/ERC_WP3_Year1_Study1_*
    do
      # This extracts the number from the filename and assigns it to the variable "num"
      # num=$(echo $f | sed 's/foraging_path_trial_//' | sed 's/\.jpg//')
-     num=$(echo $f | sed 's/ERC_WP3_Year1_Study1_//' | sed 's/foraging_path_trial_//'  | sed 's/\.jpg//')
-     parnum=${num:0:4}
-     trialnum=${num:20:1}
-     num=${num:22:5}
+     num=$(echo $f | sed 's/ERC_WP3_Year1_Study1_//' | sed 's/foraging_path_trial_//'  | sed 's/\.png//')
+     parnum=${num:12:4}
+     #timestamp=${num:17:14}
+     trialnum=${num:32:1}
+     num=${num:34:5}
      parnumarray[$i]=$parnum
      trialarray[$i]=$trialnum
 	
@@ -30,7 +31,7 @@ read step_size
   
      # convert is part of ImageMagick. This adds the unpadded trialstamp to the CI and writes it to a file called img-$filenum.jpeg     
      #convert $f -gravity NorthEast -pointsize 32 -annotate +10+10 $unpaddednum "img-participant-$parnum-trial-$trialnum-$filenum.jpeg"
-     convert $f -gravity NorthEast -pointsize 32 "img-participant-$parnum-trial-$trialnum-$filenum.jpeg"
+     convert $f -gravity NorthEast -pointsize 32 "./Temporary/img-participant-$parnum-trial-$trialnum-$filenum.jpeg"
      
      #For monitoring the progress of the script
      echo $filenum
@@ -49,7 +50,7 @@ read step_size
    # "-c:v libvpx": use the libvpx video codec (also known as the WebM codec)
    # "-qmin 4 -qmax 4": set the minimum and maximum quality to 4 (out of 0-63, with lower meaning better quality)
    # "video.mp4": the filename of the output
-   ffmpeg -r 5 -i img-participant-$eachpar-trial-$eachtrial-%d.jpeg -r:v 29.976 -c:v libvpx -qmin 4 -qmax 4 "video-participant-$eachpar-trial-$eachtrial".webm
+   ffmpeg -r 5 -i ./Temporary/img-participant-$eachpar-trial-$eachtrial-%d.jpeg -r:v 29.976 -c:v libvpx -qmin 4 -qmax 4 "../Output/video-participant-$eachpar-trial-$eachtrial".webm
  }
  
  # Calling the functions
@@ -63,7 +64,5 @@ read step_size
 	done
  done
 
- 
  # Clean up
- rm img-*
- rm ERC_WP3_Year1_Study1_*
+ #rm -r Temporary/*

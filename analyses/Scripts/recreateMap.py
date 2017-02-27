@@ -5,17 +5,17 @@ import pygame
 
 def init_datafile_mapSurface(expStartTime, subjectID, trialNum, filename=None):
 	if filename is None:
-		filename = os.path.join("ERC_WP3_Year1_Study1_") + str(subjectID) + "_" + str(expStartTime) + "_visual_foraging_mapSurfaceNEW_trial_" + str(trialNum) + ".txt"
+		filename = os.path.join("../Processeddata/ERC_WP3_Year1_Study1_") + str(subjectID) + "_" + str(expStartTime) + "_visual_foraging_mapSurface_recreated_trial_" + str(trialNum) + ".txt"
 	  
 def write_mapSurface(output, expStartTime, subjectID, trialNum, filename=None):
 	if filename is None:
-		filename = os.path.join("ERC_WP3_Year1_Study1_") + str(subjectID) + "_" + str(expStartTime) + "_visual_foraging_mapSurfaceNEW_trial_" + str(trialNum) + ".txt"
+		filename = os.path.join("../Processeddata/ERC_WP3_Year1_Study1_") + str(subjectID) + "_" + str(expStartTime) + "_visual_foraging_mapSurface_recreated_trial_" + str(trialNum) + ".txt"
 	f = open(filename, 'a')
 	f.write("%s" % output)
 	f.close()
 
 # Read datafiles
-all_datafiles = glob.glob('./*.txt')
+all_datafiles = glob.glob('./Temporary/*.txt')
 select_datafiles = [file for file in all_datafiles if "_visual_foraging_mapSurface_trial_" in file]
 
 # Melt dataframes to long format
