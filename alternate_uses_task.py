@@ -280,7 +280,7 @@ if __name__ == '__main__':
 	if debug == "f":
 		trial_time = 600.0
 	else:
-		trial_time = 1.0
+		trial_time = 10.0
 	
 	expStartTime = sys.argv[1]
 	subject_ID = sys.argv[2]
