@@ -278,8 +278,8 @@ class App:
         self.clock = pygame.time.Clock()
         self._display_surf = pygame.display.set_mode(self.size,
                                                      pygame.HWSURFACE |
-                                                     pygame.DOUBLEBUF |
-                                                     pygame.FULLSCREEN)
+                                                     pygame.DOUBLEBUF)# |
+                                                     #pygame.FULLSCREEN)
         self.wait = Wait(self._display_surf)
 
     def on_event(self, event):
@@ -304,6 +304,8 @@ class App:
         
         if timer() - self.trialStartTime >= 3:
 			self.update_counter = int((self.total_counter/(self.trial_time-3.0)) * (self.trial_time - (timer()- self.trialStartTime)))
+			if self.update_counter < 0:
+				self.update_counter = 0
 			
 			if timer() - self.agent.last_angle_timestamp > 0.3:
 				self.agent.total_avg_turned += abs((((self.agent.direction - self.agent.last_angle) + 180) % 360) - 180)
@@ -336,7 +338,7 @@ class App:
 		black = 0, 0, 0
 		self._display_surf.fill(black)
 		self._display_surf.blit(pygame.transform.scale(self.seenSurface,(600, 600)), (0, 0))
-		#self._display_surf.blit(pygame.transform.scale(self.mapSurface,(600, 600)), (0, 0)) # Uncomment to display mapSurface
+		self._display_surf.blit(pygame.transform.scale(self.mapSurface,(600, 600)), (0, 0)) # Uncomment to display mapSurface
 		self.draw_info_overlay()
 		pygame.display.flip()
 
@@ -379,7 +381,6 @@ class App:
         self.write_data_path(self.path_array)		
         self.path_array = []
 		
-
     def on_execute(self):
         if self.on_init() == False:
             self._running = False
@@ -387,10 +388,9 @@ class App:
         image_intro01 = pygame.image.load(os.path.join("images", "intro_foraging.png")).convert()
         self.wait.intro(image_intro01)
 
-        for trialNum in range(5):
+        for trialNum in range(1):
 			self.update_counter = 2400
 			self.run_trial(trialNum)
-
 
         self.on_cleanup()
 
@@ -399,7 +399,7 @@ if __name__ == "__main__":
     if debug == "f":
         trial_time = 123.0
     else:
-        trial_time = 5.0
+        trial_time = 15.0
 	
     expStartTime = sys.argv[1]
     subject_ID = sys.argv[2]
